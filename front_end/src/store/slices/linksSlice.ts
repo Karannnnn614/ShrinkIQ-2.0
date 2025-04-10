@@ -22,8 +22,8 @@ const initialState: LinksState = {
 export const createLink = createAsyncThunk(
   'links/create',
   async (payload: CreateLinkPayload) => {
-    const response = await axios.post('/api/links/shorten', payload, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    const response = await axios.post("/api/links/shorten", payload, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     return response.data;
   }
