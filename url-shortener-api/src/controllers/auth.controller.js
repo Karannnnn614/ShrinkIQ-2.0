@@ -1,26 +1,24 @@
-// src/controllers/auth.controller.js
 import jwt from "jsonwebtoken";
 
 const hardcodedCredentials = {
   email: "intern@dacoid.com",
   password: "Test123",
+  id: "663d83044a011e2cddc38c3a", // 👈 use a real or fake MongoDB ObjectId
 };
 
 export const login = (req, res) => {
   const { email, password } = req.body || {};
 
-  // Validate required fields
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
-  // Validate credentials
   if (
     email === hardcodedCredentials.email &&
     password === hardcodedCredentials.password
   ) {
     const token = jwt.sign(
-      { email },
+      { id: hardcodedCredentials.id, email }, // ✅ add `id` to token payload
       process.env.JWT_SECRET || "default_secret",
       { expiresIn: "1h" }
     );
