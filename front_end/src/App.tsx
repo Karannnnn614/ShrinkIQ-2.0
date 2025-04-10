@@ -1,22 +1,36 @@
-import { Provider } from 'react-redux';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { store } from './store/store';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import RedirectPage from './pages/RedirectPage';
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
+  return token ? <>{children}</> : <Navigate to="/login" />;
+}
 
 function App() {
   return (
-    <Provider store={store}>
+    <AuthProvider>
       <Router>
+        <Toaster position="top-right" />
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route 
+            path="/dashboard/*" 
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } 
+          />
+          <Route path="/:shortCode" element={<RedirectPage />} />
+          <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
-        <Toaster position="top-right" />
       </Router>
-    </Provider>
+    </AuthProvider>
   );
 }
 

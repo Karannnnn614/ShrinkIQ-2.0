@@ -21,10 +21,6 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.get("/health", (req, res) => {
-  res.send("Welcome to the URL Shortener API!");
-}
-);
 app.use("/", linkRoutes); 
 app.use("/api/auth", authRoutes);
 app.use("/api/links", linkRoutes);
