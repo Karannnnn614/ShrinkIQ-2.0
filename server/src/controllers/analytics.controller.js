@@ -214,7 +214,7 @@ export const getDeviceBreakdown = async (req, res) => {
       { $match: { shortUrl: { $in: shortUrls } } },
       {
         $group: {
-          _id: "$device",
+          _id: "$deviceInfo",  // Changed from device to deviceInfo
           count: { $sum: 1 }
         }
       },
