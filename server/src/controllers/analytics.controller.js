@@ -210,18 +210,14 @@ export const getDeviceBreakdown = async (req, res) => {
     const shortUrls = userLinks.map(link => link.shortUrl);
     
     // Get device breakdown using aggregation
-    const deviceStats = await Click.aggregate([
-      { $match: { shortUrl: { $in: shortUrls } } },
-      {
-        $group: {
-<<<<<<< HEAD
-          _id: "$deviceInfo",  // Changed from device to deviceInfo
-=======
-          _id: "$device",
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
-          count: { $sum: 1 }
-        }
-      },
+const deviceStats = await Click.aggregate([
+  { $match: { shortUrl: { $in: shortUrls } } },
+  {
+    $group: {
+      _id: "$deviceInfo",  // Using deviceInfo as it appears to be the updated field name
+      count: { $sum: 1 }
+    }
+  },
       {
         $project: {
           device: "$_id",

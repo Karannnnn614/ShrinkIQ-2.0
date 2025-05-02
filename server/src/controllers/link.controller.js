@@ -12,11 +12,7 @@ export const createShortLink = async (req, res) => {
   // Make custom alias required
   if (!customAlias) {
     return res.status(400).json({
-<<<<<<< HEAD
       error: "Custom alias is required.",
-=======
-      error: "Custom alias is required."
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     });
   }
 
@@ -35,11 +31,7 @@ export const createShortLink = async (req, res) => {
       shortUrl: customAlias,
       userId,
       expirationDate: expiryTime || null,
-<<<<<<< HEAD
       title: title || longUrl.substring(0, 30), // Use title or truncated URL
-=======
-      title: title || longUrl.substring(0, 30) // Use title or truncated URL
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     });
 
     await newLink.save();
@@ -53,11 +45,7 @@ export const createShortLink = async (req, res) => {
       expires_at: newLink.expirationDate,
       title: newLink.title,
       clicks: 0,
-<<<<<<< HEAD
       message: "Short link created successfully.",
-=======
-      message: "Short link created successfully."
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     });
   } catch (error) {
     console.error("Error in createShortLink:", error.message);
@@ -73,7 +61,6 @@ export const getUserLinks = async (req, res) => {
     // Fetch links with aggregated click counts
     const userLinks = await Link.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-<<<<<<< HEAD
       {
         $lookup: {
           from: "clicks",
@@ -94,28 +81,6 @@ export const getUserLinks = async (req, res) => {
         },
       },
       { $sort: { created_at: -1 } },
-=======
-      { 
-        $lookup: { 
-          from: "clicks", 
-          localField: "shortUrl", 
-          foreignField: "shortUrl", 
-          as: "clickData" 
-        } 
-      },
-      { 
-        $project: { 
-          id: "$_id",
-          original_url: "$originalUrl", 
-          short_code: "$shortUrl", 
-          title: "$title",
-          created_at: "$createdAt",
-          expires_at: "$expirationDate", 
-          clicks: { $size: "$clickData" } 
-        } 
-      },
-      { $sort: { created_at: -1 } }
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     ]);
 
     return res.status(200).json(userLinks);
@@ -132,7 +97,6 @@ export const getLinkStats = async (req, res) => {
 
   try {
     // First verify the link belongs to the user
-<<<<<<< HEAD
     const link = await Link.findOne({
       _id: id,
       userId: new mongoose.Types.ObjectId(userId),
@@ -142,21 +106,11 @@ export const getLinkStats = async (req, res) => {
       return res
         .status(404)
         .json({ error: "Link not found or not authorized." });
-=======
-    const link = await Link.findOne({ 
-      _id: id, 
-      userId: new mongoose.Types.ObjectId(userId)
-    });
-
-    if (!link) {
-      return res.status(404).json({ error: "Link not found or not authorized." });
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     }
 
     // Get clicks with additional analytics
     const clicks = await Click.aggregate([
       { $match: { shortUrl: link.shortUrl } },
-<<<<<<< HEAD
       {
         $group: {
           _id: {
@@ -165,16 +119,6 @@ export const getLinkStats = async (req, res) => {
           },
           count: { $sum: 1 },
         },
-=======
-      { 
-        $group: { 
-          _id: {
-            day: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
-            device: "$device"
-          },
-          count: { $sum: 1 }
-        }
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
       },
       {
         $group: {
@@ -182,7 +126,6 @@ export const getLinkStats = async (req, res) => {
           devices: {
             $push: {
               device: "$_id.device",
-<<<<<<< HEAD
               count: "$count",
             },
           },
@@ -190,15 +133,6 @@ export const getLinkStats = async (req, res) => {
         },
       },
       { $sort: { _id: 1 } },
-=======
-              count: "$count"
-            }
-          },
-          totalCount: { $sum: "$count" }
-        }
-      },
-      { $sort: { _id: 1 } }
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     ]);
 
     return res.status(200).json({
@@ -207,7 +141,6 @@ export const getLinkStats = async (req, res) => {
         original_url: link.originalUrl,
         short_code: link.shortUrl,
         title: link.title,
-<<<<<<< HEAD
         created_at: link.createdAt,
       },
       clicks: clicks.map((day) => ({
@@ -216,16 +149,6 @@ export const getLinkStats = async (req, res) => {
         total: day.totalCount,
       })),
       total_clicks: clicks.reduce((acc, day) => acc + day.totalCount, 0),
-=======
-        created_at: link.createdAt
-      },
-      clicks: clicks.map(day => ({
-        date: day._id,
-        devices: day.devices,
-        total: day.totalCount
-      })),
-      total_clicks: clicks.reduce((acc, day) => acc + day.totalCount, 0)
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     });
   } catch (error) {
     console.error("Error fetching link stats:", error);
@@ -241,7 +164,6 @@ export const updateLink = async (req, res) => {
 
   try {
     // Find the link first
-<<<<<<< HEAD
     const link = await Link.findOne({
       _id: id,
       userId: new mongoose.Types.ObjectId(userId),
@@ -251,15 +173,6 @@ export const updateLink = async (req, res) => {
       return res
         .status(404)
         .json({ error: "Link not found or not authorized." });
-=======
-    const link = await Link.findOne({ 
-      _id: id, 
-      userId: new mongoose.Types.ObjectId(userId) 
-    });
-
-    if (!link) {
-      return res.status(404).json({ error: "Link not found or not authorized." });
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     }
 
     // If customAlias is provided and different, validate it
@@ -268,19 +181,12 @@ export const updateLink = async (req, res) => {
       if (!customAlias.trim()) {
         return res.status(400).json({ error: "Custom alias cannot be empty." });
       }
-<<<<<<< HEAD
 
       const aliasExists = await Link.findOne({ shortUrl: customAlias });
       if (aliasExists) {
         return res
           .status(400)
           .json({ error: "Custom alias is already in use." });
-=======
-      
-      const aliasExists = await Link.findOne({ shortUrl: customAlias });
-      if (aliasExists) {
-        return res.status(400).json({ error: "Custom alias is already in use." });
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
       }
     }
 
@@ -299,11 +205,7 @@ export const updateLink = async (req, res) => {
       title: link.title,
       created_at: link.createdAt,
       expires_at: link.expirationDate,
-<<<<<<< HEAD
       message: "Link updated successfully.",
-=======
-      message: "Link updated successfully."
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     });
   } catch (error) {
     console.error("Error updating link:", error);
@@ -317,7 +219,6 @@ export const deleteLink = async (req, res) => {
   const userId = req.user.id;
 
   try {
-<<<<<<< HEAD
     const result = await Link.deleteOne({
       _id: id,
       userId: new mongoose.Types.ObjectId(userId),
@@ -327,15 +228,6 @@ export const deleteLink = async (req, res) => {
       return res
         .status(404)
         .json({ error: "Link not found or not authorized." });
-=======
-    const result = await Link.deleteOne({ 
-      _id: id, 
-      userId: new mongoose.Types.ObjectId(userId) 
-    });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: "Link not found or not authorized." });
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     }
 
     // Optionally, also delete associated clicks
@@ -371,11 +263,7 @@ export const redirectToOriginalUrl = async (req, res) => {
       shortUrl,
       timestamp: new Date(),
       ipAddress: req.ip,
-<<<<<<< HEAD
       deviceInfo: getDeviceType(req.headers["user-agent"]),
-=======
-      device: getDeviceType(req.headers["user-agent"]),
->>>>>>> d832d2761b4048c1798a24d67fa7ab25357b8b19
     }).catch((err) => {
       console.error("Failed to log click:", err);
     });
